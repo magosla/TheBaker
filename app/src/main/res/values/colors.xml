@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="colorPrimary">#1f5f87</color>
+    <color name="colorPrimaryDark">#012e4b</color>
+    <color name="colorAccent">#6bc794</color>
+
+
+    <color name="common_border_color">#a4d1f9</color>
+
+    <color name="color_white">#ffffff</color>
+    <color name="color_gray">#FFDEDDDD</color>
+    <color name="color_text">#252424</color>
+    <color name="windowBackground">#a2cff5</color>
+    <color name="widget_background" tools:keep="@color/widget_background">#2f2f30</color>
+    <color name="transparent" tools:keep="@color/transparent">#00000000</color>
+    <color name="color_card" tools:keep="@color/color_card">#cdffffff</color>
+    <color name="color_card_detail" tools:keep="@color/color_card_detail">#b1ffffff</color>
+    <color name="color_black">#c4000000</color>
+</resources>

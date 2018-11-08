@@ -1,0 +1,40 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">TheBaker</string>
+    <string name="title_activity_recipes">Recipes</string>
+    <string name="title_activity_recipe">Recipe</string>
+    <string name="title_activity_recipe_step">Recipe\'s Step</string>
+
+    <string name="tag_key_step_object">1</string>
+    <string name="tag_key_recipe_id">11</string>
+    <string name="tag_key_step_no" tools:keep="@string/tag_key_step_no">11</string>
+
+    <string name="title_description" tools:keep="@string/title_description">DESCRIPTION</string>
+    <string name="title_short_description" tools:keep="@string/title_short_description">SHORT DESCRIPTION</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment" tools:keep="@string/hello_blank_fragment">Hello blank fragment</string>
+    <string name="msg_no_recipe" tools:keep="@string/msg_no_recipe">There is currently no recipe to show</string>
+    <string name="msg_no_ingredient">There is currently no ingredient to show</string>
+    <string name="msg_invalid_id_arg">Invalid operation - recipe is not found</string>
+    <string name="mgs_no_video" tools:keep="@string/mgs_no_video">No video available</string>
+    <string name="appwidget_text" tools:keep="@string/appwidget_text">EXAMPLE</string>
+    <string name="add_widget" tools:keep="@string/add_widget">Add widget</string>
+    <string name="msg_loading" tools:keep="@string/msg_loading">loading…</string>
+    <string name="msg_no_data" tools:keep="@string/msg_no_data">No data</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="recipe_steps" tools:keep="@string/recipe_steps">Recipe Steps</string>
+    <string name="msg_loading_recipe">Loading Recipe…</string>
+
+    <string name="reload_label" tools:keep="@string/reload_label">Tap to retry</string>
+    <string name="msg_encountered_error" tools:keep="@string/msg_encountered_error">An error was encountered</string>
+    <string name="msg_no_network_connection" tools:keep="@string/msg_no_network_connection">No Connection available</string>
+    <string name="title_activity_main" tools:keep="@string/title_activity_main">MainActivity</string>
+    <string name="label_set">Set</string>
+    <string name="label_remove">Remove</string>
+    <string name="msg_recipe_selected">Recipe Selected</string>
+    <string name="msg_recipe_un_select">Recipe un-selected</string>
+    <string name="label_prev_step" tools:keep="@string/label_prev_step">PREV STEP</string>
+    <string name="label_next_step" tools:keep="@string/label_next_step">NEXT STEP</string>
+
+</resources>

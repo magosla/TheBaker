@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="has_two_pane">false</bool>
+    <bool name="tablet_device">false</bool>
+    <bool name="landscape_orientation">false</bool>
+</resources>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:keep="@layout/recipe_step_list_item">
+
+    <data>
+
+        <variable
+            name="step"
+            type="com.naijaplanet.magosla.android.thebaker.data.models.RecipeStep" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/recipe_step_items_states"
+        android:padding="@dimen/default_padding_margin">
+
+        <TextView
+            android:layout_width="30sp"
+            android:layout_height="30sp"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_icon"
+            android:gravity="center"
+            android:text="@{String.valueOf(step.stepNo + 1)}"
+            android:textColor="@color/color_white" />
+
+        <TextView
+            android:id="@+id/tv_short_description"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:ellipsize="middle"
+            android:textSize="16sp"
+            android:singleLine="true"
+            android:text="@{step.shortDescription}" />
+        <TextView
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            android:textSize="12sp"
+            android:layout_gravity="center"
+            android:drawableTint="@color/color_gray"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:drawableRight="@drawable/ic_chevron_right"
+            android:drawableEnd="@drawable/ic_chevron_right"
+            android:text=""
+            android:textColor="@color/color_white"
+            tools:targetApi="m"
+            tools:ignore="HardcodedText" />
+
+    </LinearLayout>
+</layout>
