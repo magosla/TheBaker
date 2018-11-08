@@ -106,6 +106,7 @@ public class RecipeStepFragment extends Fragment implements MediaPlayer.Callback
         if(step != null) {
             mStep = step;
             updateUI();
+            initializeMediaPlayer();
         }else{
             Toast.makeText(getContext(), "Cannot change step", Toast.LENGTH_SHORT).show();
         }
@@ -158,13 +159,6 @@ public class RecipeStepFragment extends Fragment implements MediaPlayer.Callback
                     mBinding.playerView.setLayoutParams(layoutParams);
                 });
             }
-            Uri mediaUri = Uri.parse(mStep.getVideoURL());
-            // try to release the media player if previously exists
-            releaseMediaPlayer();
-            mMediaPlayer = new MediaPlayer(getContext(), mBinding.playerView, mediaUri, this);
-        } else {
-            // try to release the media player if previously exists
-            releaseMediaPlayer();
         }
         mBinding.actionNextStep.setOnClickListener(view -> {
             if (mListener != null)
@@ -184,12 +178,34 @@ public class RecipeStepFragment extends Fragment implements MediaPlayer.Callback
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        releaseMediaPlayer();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initializeMediaPlayer();
+    }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
-        releaseMediaPlayer();
+    }
+
+    private void initializeMediaPlayer() {
+
+        if(!TextUtils.isEmpty(mStep.getVideoURL())) {
+            Uri mediaUri = Uri.parse(mStep.getVideoURL());
+            // try to release the media player if previously exists
+            releaseMediaPlayer();
+            mMediaPlayer = new MediaPlayer(getContext(), mBinding.playerView, mediaUri, this);
+        }else{
+            releaseMediaPlayer();
+        }
     }
 
     private void releaseMediaPlayer() {
