@@ -123,7 +123,6 @@ public class RecipeStepActivity extends AppCompatActivity implements ToolbarMana
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
 
-        Log.i(this.getClass().getName(), "step no when load finished " + mStepNo);
         RecipeStep step = null;
         if (data != null && data.getCount() > 0) {
             data.moveToFirst();
@@ -136,7 +135,6 @@ public class RecipeStepActivity extends AppCompatActivity implements ToolbarMana
             step.setVideoURL(Cursors.getString(data, RecipeStepsColumn.VIDEO_URL));
             step.setStepNo(Cursors.getInt(data, RecipeStepsColumn.STEP_NO));
             mStep = step;
-            Log.i(this.getClass().getName(), "step no when " + step.getStepNo());
 
             // loadFragment(step);
         }
