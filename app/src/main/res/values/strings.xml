@@ -36,5 +36,6 @@
     <string name="msg_recipe_un_select">Recipe un-selected</string>
     <string name="label_prev_step" tools:keep="@string/label_prev_step">PREV STEP</string>
     <string name="label_next_step" tools:keep="@string/label_next_step">NEXT STEP</string>
+    <string name="msg_can_not_change_step">Cannot change step</string>
 
 </resources>
