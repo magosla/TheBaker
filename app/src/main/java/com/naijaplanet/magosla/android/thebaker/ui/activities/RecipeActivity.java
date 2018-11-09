@@ -17,30 +17,31 @@ import com.naijaplanet.magosla.android.thebaker.ui.fragments.RecipeStepFragment;
 import com.naijaplanet.magosla.android.thebaker.utils.ActivityUtil;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentManager;
 
 public class RecipeActivity extends AppCompatActivity implements RecipeFragment.OnFragmentInteractionListener, ToolbarManager {
 
     private static final String FRAGMENT_MAIN_TAG = "main_frag_tag";
+    private final int MenuItem_Recipe_Select = 11;
     private int mRecipeId;
     private ActivityRecipeBinding mBinding;
     private boolean mHasTwoPane;
     private String mRecipeName;
     private boolean mRecipeSelected;
-    private final int MenuItem_Recipe_Select = 11;
     private Toast mToast;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //getMenuInflater().inflate(R.menu.menu_recipe, menu);
 
-        MenuItem item = menu.add(Menu.NONE, MenuItem_Recipe_Select, Menu.NONE,mRecipeSelected?R.string.label_remove:R.string.label_set);
+        MenuItem item = menu.add(Menu.NONE, MenuItem_Recipe_Select, Menu.NONE, mRecipeSelected ? R.string.label_remove : R.string.label_set);
         item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         if (mRecipeSelected) {
             item.setIcon(R.drawable.ic_remove);
-        }else{
+        } else {
             item.setIcon(R.drawable.ic_add);
         }
         return true;
@@ -49,15 +50,19 @@ public class RecipeActivity extends AppCompatActivity implements RecipeFragment.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
             case MenuItem_Recipe_Select:
                 if (!mRecipeSelected) {
+
                     item.setIcon(R.drawable.ic_remove);
                     item.setTitle(R.string.label_remove);
 
                     Config.saveUsersRecipe(getApplicationContext(), mRecipeId);
                     mRecipeSelected = true;
                     showToast(getString(R.string.msg_recipe_selected));
-                }else{
+                } else {
                     item.setIcon(R.drawable.ic_add);
                     item.setTitle(R.string.label_set);
 
@@ -70,10 +75,10 @@ public class RecipeActivity extends AppCompatActivity implements RecipeFragment.
     }
 
     private void showToast(String text) {
-        if(mToast!=null){
+        if (mToast != null) {
             mToast.cancel();
         }
-        mToast = Toast.makeText(this,text,Toast.LENGTH_SHORT);
+        mToast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
         mToast.show();
     }
 
