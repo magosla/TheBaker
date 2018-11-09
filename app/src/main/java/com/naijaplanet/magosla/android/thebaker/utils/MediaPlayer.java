@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -47,11 +48,15 @@ public class MediaPlayer implements Player.EventListener {
     private DefaultTrackSelector.Parameters mTrackSelectorParameters;
     @SuppressWarnings("unused")
     private PlaybackStateCompat.Builder mStateBuilder;
+    private PlayInfo mPlayInfo;
 
-    public MediaPlayer(Context context, @NonNull PlayerView playerView, @NonNull Uri mediaUri, @Nullable Callback listener) {
+    public MediaPlayer(Context context, @NonNull PlayerView playerView, @NonNull Uri mediaUri,
+                       @Nullable Callback listener, @Nullable PlayInfo playInfo) {
         mContext = context;
         mPlayerView = playerView;
         mMediaUri = mediaUri;
+        mPlayInfo = playInfo;
+
         if (listener != null) {
             mListener = listener;
         }
@@ -72,29 +77,33 @@ public class MediaPlayer implements Player.EventListener {
             String userAgent = Util.getUserAgent(mContext, mContext.getString(R.string.app_name));
 
             // Produces DataSource instances through which media data is loaded.
-            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(mContext,userAgent);
-
+            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(mContext, userAgent);
 
 
             int cacheFlags = CacheDataSource.FLAG_BLOCK_ON_CACHE;
             CacheDataSourceFactory cacheDataSource = new CacheDataSourceFactory(VideoCache.getInstance(mContext),
-                    dataSourceFactory,cacheFlags,CACHE_SIZE);
+                    dataSourceFactory, cacheFlags, CACHE_SIZE);
 
 
             // This is the MediaSource representing the media to be played.
             MediaSource videoSource = new ExtractorMediaSource.Factory(cacheDataSource)
                     .createMediaSource(mMediaUri);
 
+            boolean haveStartPosition = mPlayInfo != null && mPlayInfo.mStartWindow != C.INDEX_UNSET;
 
+            if (haveStartPosition) {
+                mExoPlayer.seekTo(mPlayInfo.mStartWindow, mPlayInfo.mStartPosition);
+            }
 
             // Prepare the player with the source.
-            mExoPlayer.prepare(videoSource);
+            mExoPlayer.prepare(videoSource, haveStartPosition, false);
 
             mPlayerView.setPlayer(mExoPlayer);
-            mExoPlayer.setPlayWhenReady(true);
+            mExoPlayer.setPlayWhenReady(mPlayInfo == null || mPlayInfo.mStartAutoPlay);
+
 
             mPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
-          //  mExoPlayer.setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
+            //  mExoPlayer.setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
         }
     }
 
@@ -103,18 +112,18 @@ public class MediaPlayer implements Player.EventListener {
         switch (playbackState) {
             case Player.STATE_ENDED:
                 Log.i("EventListenerState", "Playback ended!");
-                mExoPlayer.setPlayWhenReady(false);
+                //  mExoPlayer.setPlayWhenReady(false);
                 mListener.playbackEnded();
                 break;
             case Player.STATE_READY:
                 Log.i("EventListenerState", "Playback State Ready!");
                 mPlayerView.setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING);
                 mListener.playbackReady();
-                mExoPlayer.setPlayWhenReady(true);
+                //  mExoPlayer.setPlayWhenReady(true);
                 break;
             case Player.STATE_BUFFERING:
                 Log.i("EventListenerState", "Playback buffering");
-                mExoPlayer.setPlayWhenReady(false);
+                // mExoPlayer.setPlayWhenReady(false);
                 mListener.playbackBuffering();
 
                 break;
@@ -132,6 +141,12 @@ public class MediaPlayer implements Player.EventListener {
         mExoPlayer = null;
     }
 
+    public PlayInfo getPlayInfo() {
+        return new PlayInfo(mExoPlayer.getPlayWhenReady(),
+                mExoPlayer.getCurrentWindowIndex(),
+                mExoPlayer.getContentPosition());
+    }
+
     public interface Callback {
         default void playbackBuffering() {
         }
@@ -146,14 +161,38 @@ public class MediaPlayer implements Player.EventListener {
         }
     }
 
+    public static class PlayInfo {
+        boolean mStartAutoPlay;
+        int mStartWindow;
+        long mStartPosition;
+
+        public PlayInfo(boolean autoPlay, int startWindow, long startPosition) {
+            mStartAutoPlay = autoPlay;
+            mStartWindow = startWindow;
+            mStartPosition = startPosition;
+        }
+
+        public boolean isStartAutoPlay() {
+            return mStartAutoPlay;
+        }
+
+        public int getStartWindow() {
+            return mStartWindow;
+        }
+
+        public long getStartPosition() {
+            return mStartPosition;
+        }
+    }
+
 }
 
- class VideoCache {
+class VideoCache {
     private static SimpleCache sDownloadCache;
 
-    public static SimpleCache getInstance(Context context) {
+    static SimpleCache getInstance(Context context) {
         if (sDownloadCache == null) {
-           // sDownloadCache = new SimpleCache(new File(context.getCacheDir(), "exoCache"), new NoOpCacheEvictor());
+            // sDownloadCache = new SimpleCache(new File(context.getCacheDir(), "exoCache"), new NoOpCacheEvictor());
             // Specify cache folder, my cache folder named media which is inside getCacheDir.
             File file = new File(context.getCacheDir(), "media");
             sDownloadCache = new SimpleCache(file, new LeastRecentlyUsedCacheEvictor(MediaPlayer.CACHE_SIZE));
