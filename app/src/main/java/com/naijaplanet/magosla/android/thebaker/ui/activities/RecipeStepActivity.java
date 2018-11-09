@@ -2,8 +2,9 @@ package com.naijaplanet.magosla.android.thebaker.ui.activities;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.naijaplanet.magosla.android.thebaker.Config;
 import com.naijaplanet.magosla.android.thebaker.R;
@@ -19,6 +20,7 @@ import net.simonvt.schematic.Cursors;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 import androidx.databinding.DataBindingUtil;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
@@ -32,6 +34,7 @@ public class RecipeStepActivity extends AppCompatActivity implements ToolbarMana
     private RecipeStep mStep;
     private int mStepNo;
     private ActivityRecipeStepBinding mBinding;
+    private Toast mToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +70,19 @@ public class RecipeStepActivity extends AppCompatActivity implements ToolbarMana
                 mStep = arg.getParcelable(Config.BUNDLE_RECIPE_STEP);
             }
             loadFragment(mStep);
-        }else{
+        } else {
             finish();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -82,9 +95,17 @@ public class RecipeStepActivity extends AppCompatActivity implements ToolbarMana
     }
 
     private void loadFragment(RecipeStep step) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(mBinding.content.flStepContainer.getId(), RecipeStepFragment.newInstance(step, mTotalSteps))
-                .commit();
+        if (step != null) {
+            String tag = String.valueOf(step.getId());
+            RecipeStepFragment hf = (RecipeStepFragment) getSupportFragmentManager()
+                    .findFragmentByTag(tag);
+
+            if (hf == null)
+                getSupportFragmentManager().beginTransaction()
+                        .replace(mBinding.content.flStepContainer.getId(), RecipeStepFragment.newInstance(step, mTotalSteps), tag)
+                        .commit();
+        }else
+            showToast(getString(R.string.msg_can_not_change_step));
     }
 
     @Override
@@ -139,13 +160,26 @@ public class RecipeStepActivity extends AppCompatActivity implements ToolbarMana
             // loadFragment(step);
         }
 
+        /*
         RecipeStepFragment fragment = (RecipeStepFragment) getSupportFragmentManager().
                 findFragmentById(mBinding.content.flStepContainer.getId());
         if (fragment != null) {
             fragment.updateRecipeStep(step);
         }
+        */
 
-        //loadFragment(step);
+        if (step != null)
+            loadFragment(step);
+        else
+            showToast(getString(R.string.msg_can_not_change_step));
+    }
+
+    private void showToast(String text){
+        if(mToast!=null){
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(this, text,Toast.LENGTH_SHORT);
+        mToast.show();
     }
 
     @Override
