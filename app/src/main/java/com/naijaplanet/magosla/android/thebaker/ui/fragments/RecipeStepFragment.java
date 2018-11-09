@@ -37,6 +37,9 @@ import androidx.fragment.app.Fragment;
 @SuppressWarnings("ConstantConditions")
 public class RecipeStepFragment extends Fragment implements MediaPlayer.Callback {
 
+    private static final String KEY_POSITION = "key_position";
+    private static final String KEY_AUTO_PLAY = "key_auto_play";
+    private static final String KEY_WINDOW = "key_window";
     private RecipeStep mStep;
     private int mStepsCount;
     private boolean mRecalculateVideoDimension;
@@ -46,6 +49,8 @@ public class RecipeStepFragment extends Fragment implements MediaPlayer.Callback
     private MediaPlayer mMediaPlayer;
     private boolean mLandscapeView;
     private boolean mTwoSidedView;
+
+    private MediaPlayer.PlayInfo mPlayInfo;
 
 
     public RecipeStepFragment() {
@@ -86,6 +91,8 @@ public class RecipeStepFragment extends Fragment implements MediaPlayer.Callback
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        restoreSavedInstance(savedInstanceState);
         // Inflate the layout for this fragment
         mBinding = FragmentRecipeStepBinding.inflate(inflater, container, false);
         return mBinding.getRoot();
@@ -105,10 +112,11 @@ public class RecipeStepFragment extends Fragment implements MediaPlayer.Callback
     public void updateRecipeStep(RecipeStep step) {
         if(step != null) {
             mStep = step;
+            mPlayInfo = null;
             updateUI();
             initializeMediaPlayer();
         }else{
-            Toast.makeText(getContext(), "Cannot change step", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.msg_can_not_change_step, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -202,11 +210,35 @@ public class RecipeStepFragment extends Fragment implements MediaPlayer.Callback
             Uri mediaUri = Uri.parse(mStep.getVideoURL());
             // try to release the media player if previously exists
             releaseMediaPlayer();
-            mMediaPlayer = new MediaPlayer(getContext(), mBinding.playerView, mediaUri, this);
+            mMediaPlayer = new MediaPlayer(getContext(), mBinding.playerView, mediaUri, this, mPlayInfo);
         }else{
             releaseMediaPlayer();
         }
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if(mMediaPlayer!=null){
+
+            mPlayInfo = mMediaPlayer.getPlayInfo();
+            outState.putBoolean(KEY_AUTO_PLAY, mPlayInfo.isStartAutoPlay());
+            outState.putInt(KEY_WINDOW, mPlayInfo.getStartWindow());
+            outState.putLong(KEY_POSITION, mPlayInfo.getStartPosition());
+        }
+    }
+
+    private void restoreSavedInstance(@Nullable Bundle savedInstanceState){
+
+        if(savedInstanceState!=null){
+            boolean startAutoPlay = savedInstanceState.getBoolean(KEY_AUTO_PLAY);
+            int startWindow = savedInstanceState.getInt(KEY_WINDOW);
+            long startPosition = savedInstanceState.getLong(KEY_POSITION);
+            mPlayInfo = new MediaPlayer.PlayInfo(startAutoPlay, startWindow, startPosition);
+        }
+    }
+
 
     private void releaseMediaPlayer() {
         if (mMediaPlayer != null) {
